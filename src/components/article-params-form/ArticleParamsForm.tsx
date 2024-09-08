@@ -17,57 +17,37 @@ import { Select } from 'components/select';
 import { RadioGroup } from 'components/radio-group';
 import styles from './ArticleParamsForm.module.scss';
 
-const initialState = {
-	fontFamilyOption: defaultArticleState.fontFamilyOption,
-	fontColor: defaultArticleState.fontColor,
-	backgroundColor: defaultArticleState.backgroundColor,
-	contentWidth: defaultArticleState.contentWidth,
-	fontSizeOption: defaultArticleState.fontSizeOption,
-};
-
 type Props = {
-	isOpen: boolean;
 	handleSetStyle: (newStyles: ArticleStateType) => void;
-	handleOpen: () => void;
 };
 
-export const ArticleParamsForm = ({
-	isOpen,
-	handleSetStyle,
-	handleOpen,
-}: Props) => {
-	const [state, setState] = useState(initialState);
+export const ArticleParamsForm = ({ handleSetStyle }: Props) => {
+	const [formState, setFormState] = useState(defaultArticleState);
+	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 	const asideStyle = clsx({
 		[styles.container]: true,
-		[styles.container_open]: isOpen,
+		[styles.container_open]: isDrawerOpen,
 	});
+	const handleOpenDrawer = () => {
+		setIsDrawerOpen(!isDrawerOpen);
+	};
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		handleSetStyle(state);
+		handleSetStyle(formState);
 	};
 	const handleReset = (e: React.FormEvent) => {
 		e.preventDefault();
-		setState(initialState);
-		handleSetStyle(initialState);
+		setFormState(defaultArticleState);
+		handleSetStyle(defaultArticleState);
 	};
-	const handleFontFamilyChange = (option: OptionType) => {
-		setState({ ...state, fontFamilyOption: option });
-	};
-	const handleFontSizeChange = (option: OptionType) => {
-		setState({ ...state, fontSizeOption: option });
-	};
-	const handleFontColorChange = (option: OptionType) => {
-		setState({ ...state, fontColor: option });
-	};
-	const handleBackgroundColorChange = (option: OptionType) => {
-		setState({ ...state, backgroundColor: option });
-	};
-	const handleContentWidthChange = (option: OptionType) => {
-		setState({ ...state, contentWidth: option });
+	const handleOnChange = (field: keyof ArticleStateType) => {
+		return (value: OptionType) => {
+			setFormState((prevState) => ({ ...prevState, [field]: value }));
+		};
 	};
 	return (
 		<>
-			<ArrowButton onClick={handleOpen} isOpen={isOpen} />
+			<ArrowButton onClick={handleOpenDrawer} isOpen={isDrawerOpen} />
 			<aside className={asideStyle}>
 				<form
 					className={styles.form}
@@ -79,33 +59,33 @@ export const ArticleParamsForm = ({
 					<Select
 						title='Шрифт'
 						options={fontFamilyOptions}
-						selected={state.fontFamilyOption}
-						onChange={handleFontFamilyChange}
+						selected={formState.fontFamilyOption}
+						onChange={handleOnChange('fontFamilyOption')}
 					/>
 					<RadioGroup
 						name='radio'
 						title='Размер шрифта'
 						options={fontSizeOptions}
-						selected={state.fontSizeOption}
-						onChange={handleFontSizeChange}
+						selected={formState.fontSizeOption}
+						onChange={handleOnChange('fontSizeOption')}
 					/>
 					<Select
 						title='Цвет шрифта'
 						options={fontColors}
-						selected={state.fontColor}
-						onChange={handleFontColorChange}
+						selected={formState.fontColor}
+						onChange={handleOnChange('fontColor')}
 					/>
 					<Select
 						title='Цвет фона'
 						options={backgroundColors}
-						selected={state.backgroundColor}
-						onChange={handleBackgroundColorChange}
+						selected={formState.backgroundColor}
+						onChange={handleOnChange('backgroundColor')}
 					/>
 					<Select
 						title='Ширина контента'
 						options={contentWidthArr}
-						selected={state.contentWidth}
-						onChange={handleContentWidthChange}
+						selected={formState.contentWidth}
+						onChange={handleOnChange('contentWidth')}
 					/>
 					<div className={styles.bottomContainer}>
 						<Button title='Сбросить' type='reset' />
